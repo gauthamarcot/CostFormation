@@ -65,12 +65,12 @@ A multi-cloud resource cost calculator and deployment template generator.
    ```
 Install Dependencies
 
-```
+```bash
 npm install
 ```
 or
 
-```
+```bash
 yarn install
 ```
 Set Up Environment Variables
@@ -85,12 +85,12 @@ AZURE_API_KEY=your_azure_api_key
 GCP_API_KEY=your_gcp_api_key
 Run the Application
 
-```
+```bash
 npm start
 ```
 or
 
-```
+```bash
 yarn start
 ```
 Access the Application
@@ -129,17 +129,17 @@ Click on the Fork button at the top right corner of the repository page.
 
 ### Create a Feature Branch
 
-```
+```bash
 git checkout -b feature/YourFeatureName
 ```
 Commit Your Changes
 
-```
+```bash
 git commit -m "Add your message here"
+```
 Push to Your Fork
-```
 
-```
+```bash
 git push origin feature/YourFeatureName
 Create a Pull Request
 ```
@@ -156,7 +156,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Contact
 Project Maintainer: Goutham Arcod (gouthamarcot@gmail.com)
-GitHub Issues: https://github.com/yourusername/CostFormationCalculator/issues
+GitHub Issues: https://github.com/gauthamarcot/CostFormation/issues
 Note: Replace yourusername with your actual GitHub username.
 
 Roadmap
