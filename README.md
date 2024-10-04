@@ -157,7 +157,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 Contact
 Project Maintainer: Goutham Arcod (gouthamarcot@gmail.com)
 GitHub Issues: https://github.com/gauthamarcot/CostFormation/issues
-Note: Replace yourusername with your actual GitHub username.
 
 Roadmap
 - Add Support for Additional Cloud Services
