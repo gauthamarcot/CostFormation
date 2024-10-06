@@ -38,6 +38,7 @@ A multi-cloud resource cost calculator and deployment template generator.
 - **Best Practices**: Incorporates cloud provider best practices for security, scalability, and reliability.
 - **Customization**: Allows users to customize and parameterize their deployment templates.
 - **Open Source**: Community-driven project encouraging collaboration and contributions.
+- **Traffic to Resource Recommendation**: Recommendation of resource based on Traffic or load or usecase
 
 ## Supported Cloud Providers
 
