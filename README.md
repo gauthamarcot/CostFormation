@@ -12,7 +12,7 @@ A multi-cloud resource cost calculator and deployment template generator.
   - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-  - [Contribution Guidelines](#contribution-guidelines)
+- [Contribution Guidelines](#contribution-guidelines)
 - [License](#license)
 - [Contact](#contact)
 - [Roadmap](#roadmap)
