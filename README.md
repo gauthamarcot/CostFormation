@@ -21,7 +21,7 @@ A multi-cloud resource cost calculator and deployment template generator.
 
 ## Introduction
 
-**CostFormationCalculator** is an open-source tool that enables users to calculate the cost of cloud resources across multiple cloud providers and generate deployment templates based on their selections. It simplifies the process of planning, costing, and deploying cloud infrastructure by providing an intuitive interface and automating the generation of infrastructure-as-code templates.
+**CostFormationCalculator** is an open-source tool that  enables users to calculate the cost of cloud resources across multiple cloud providers and generate deployment templates based on their selections. It simplifies the process of planning, costing, and deploying cloud infrastructure by providing an intuitive interface and automating the generation of infrastructure-as-code templates.
 
 ## Features
 
