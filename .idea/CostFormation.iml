@@ -6,6 +6,5 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (CostFormation)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="teleport_pay_trade" />
   </component>
 </module>
