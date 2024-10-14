@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CostFormation.iml" filepath="$PROJECT_DIR$/.idea/CostFormation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../teleport_pay_trade/.idea/teleport_pay_trade.iml" filepath="$PROJECT_DIR$/../../teleport_pay_trade/.idea/teleport_pay_trade.iml" />
     </modules>
   </component>
 </project>
