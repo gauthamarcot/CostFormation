@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint
 from flask_restx import Api
 
-from .extensions import api, migrate, db
+from .extensions import db_service
 from .routes import register_routes
 
 
