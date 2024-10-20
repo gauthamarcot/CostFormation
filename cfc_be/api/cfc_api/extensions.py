@@ -4,10 +4,11 @@ username = "tp_cloud_test"
 password = "TpSv@234@#"
 password = parse.quote_plus(password)
 
-MONGODB = "tp_fe"
+MONGODB = "cfc_main"
 MONGO_URI = f"mongodb+srv://{username}:{password}@tpfecluster.vslsueh.mongodb.net/?retryWrites=true&w=majority&appName=TPFECluster"
+MONGODB_LOCAL_URI = "mongodb://localhost:27017/?retryWrites=true&loadBalanced=false&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000"
 
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
 
 
 class MongoDBService:
@@ -37,4 +38,4 @@ class MongoDBService:
         return collection.delete_one(query)
 
 
-db_service = MongoDBService(MONGO_URI, MONGODB)
+db_service = MongoDBService(MONGODB_LOCAL_URI, MONGODB)

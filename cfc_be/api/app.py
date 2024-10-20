@@ -1,8 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
-from app_backend import create_backend_app, db, migrate
-from app_backend.websockets.upstock_wss import upstox_feed
-from app_frontend import create_frontend_app
+
+from cfc_be.api.cfc_api import create_backend_app
 from config import Config
 
 
