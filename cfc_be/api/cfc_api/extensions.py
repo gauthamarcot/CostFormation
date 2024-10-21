@@ -44,6 +44,9 @@ import logging
 
 
 class Logger:
+    def __init__(self):
+        self.logger = None
+
     def init_app(self, app):
         handler = logging.StreamHandler()
         handler.setLevel(logging.INFO)
@@ -51,4 +54,4 @@ class Logger:
         self.logger = app.logger
 
 
-logger = Logger()
+
