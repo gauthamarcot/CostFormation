@@ -5,6 +5,14 @@ from .extensions import db_service
 from .routes import register_routes
 
 
+api = Api(
+    title='Teleport Pay Trading Frontend',
+    version='0.1',
+    description='Trading algorithm frontend APIs',
+    doc='/fe/docs'
+)
+
+
 def create_backend_app(config_class='config.Config'):
     app = Flask(__name__)
     app.config.from_object(config_class)
