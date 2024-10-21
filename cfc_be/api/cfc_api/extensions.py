@@ -39,3 +39,16 @@ class MongoDBService:
 
 
 db_service = MongoDBService(MONGODB_LOCAL_URI, MONGODB)
+
+import logging
+
+
+class Logger:
+    def init_app(self, app):
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.INFO)
+        app.logger.addHandler(handler)
+        self.logger = app.logger
+
+
+logger = Logger()
