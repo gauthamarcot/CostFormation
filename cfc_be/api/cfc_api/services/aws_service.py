@@ -1,5 +1,5 @@
 # we can use to get this for te prices
-from cfc_be.api.cfc_api.extensions import db_service
+from cfc_be.api.cfc_api.extensions import db_service, logger
 
 
 def aws_services_list():
@@ -13,5 +13,6 @@ def aws_services_list():
                                'searchKeywords': j['searchKeywords'] if len(['searchKeywords']) > 0 and 'searchKeywords' in j else j['name']})
         return res_li if len(res_li) > 0 else None
     except Exception as e:
-        print(e)
-        print("error while connecting to db")
+        logger.error("error occured due to ", e)
+
+
