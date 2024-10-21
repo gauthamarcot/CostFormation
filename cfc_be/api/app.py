@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from cfc_be.api.cfc_api import create_backend_app
+from cfc_be.api.cfc_api.extensions import Logger
 from config import Config
 
 
@@ -10,6 +11,8 @@ def create_app():
     app.config.from_object(Config)
 
     CORS(app)
+    loggerclass = Logger()
+    logger = loggerclass.init_app(app)
 
     # Initialize backend app
     backend_app = create_backend_app()
