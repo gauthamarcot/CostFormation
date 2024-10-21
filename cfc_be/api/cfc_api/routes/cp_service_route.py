@@ -16,6 +16,7 @@ class AWSCpServiceList(Resource):
         if data:
             return data, 200
 
+
 @api.route('/cp_service/gcp')
 class GCPCpServiceList(Resource):
     @api.doc('gcp cp_service_list')
@@ -25,16 +26,17 @@ class GCPCpServiceList(Resource):
         if data:
             return data, 200
 
+
 # route for azure service list
 @api.route('/cp_service/azure')
 class AzureCpServiceList(Resource):
     @api.doc('azure cp_service_list')
     def get(self):
-
         logger.info(f"sending azure cp_service_list to {request.remote_addr}")
         data = aws_services_list()
         if data:
             return data, 200
+
 
 # route for oracle cloud service list
 @api.route('/cp_service/oci')
