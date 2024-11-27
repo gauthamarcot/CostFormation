@@ -7,12 +7,11 @@ def aws_services_list():
         db = db_service.get_client()['cfc_db']
         col = db['aws_services'].find({})
         res_li = []
-        for i in col:
-            for j in i['awsServices']:
-                res_li.append({'name': j['name'], 'description': j['description'] if 'description' in j else j['name'] + "is an aws service",
-                               'regions': j['regions'] if len(j['regions']) > 0 else ['global'],
-                               'searchKeywords': j['searchKeywords'] if len(
-                                   ['searchKeywords']) > 0 and 'searchKeywords' in j else j['name']})
+        for j in col:
+            res_li.append({'name': j['service_code'],
+                           'description': j['description'],
+                           'regions': j['service_regions'],
+                           'search_words': j['search_words']})
         return res_li if len(res_li) > 0 else None
     except Exception as e:
         print("error occurred due to ", e)

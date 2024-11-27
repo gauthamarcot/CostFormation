@@ -51,9 +51,9 @@ def json_to_monogo(json_path):
         service_list = []
         for service in data['awsServices']:
             service_list.append({'service_code': service['name'],
-                                 'description': service['description'] if hasattr(service, 'description') else f"{service['name']} is an AWS service",
-                                 'service_regions': service['regions'] if hasattr(service, 'regions') and len(service['regions']) > 0 else ['global'],
-                                 'search_words': service['searchKeywords'] if hasattr(service, 'searchKeywords') and len(service['searchKeywords']) > 0 else [service['name']]})
+                                 'description': service['description'] if 'description' in service else f"{service['name']} is an AWS service",
+                                 'service_regions': service['regions'] if not hasattr(service, 'regions') else ['global'],
+                                 'search_words': service['searchKeywords'] if 'searchKeywords' in service else [service['name']]})
         aws_services.insert_many(service_list)
 
 if __name__ == '__main__':
