@@ -6,8 +6,10 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import AwsPage from './pages/AwsPage';
+import AwsPage from './pages/aws/AwsPage';
 import styled from 'styled-components';
+import AzurePage from './pages/azure/AzurePage';
+import GcpPage from './pages/gcp/GcpPage';
 
 
 
@@ -48,6 +50,8 @@ function App() {
           <Routes> {/* Define your routes */}
             <Route path="/" element={<Hero />} />
             <Route path="/aws" element={<AwsPage />} />
+            <Route path="/azure" element = {<AzurePage />} />
+            <Route path="/gcp" element = {<GcpPage />} />
             {/* Add a NotFoundPage route if desired */}
           </Routes>
           </Container>
