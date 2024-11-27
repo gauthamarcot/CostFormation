@@ -10,6 +10,7 @@ import AwsPage from './pages/aws/AwsPage';
 import styled from 'styled-components';
 import AzurePage from './pages/azure/AzurePage';
 import GcpPage from './pages/gcp/GcpPage';
+import OraclePage from './pages/oracle/OraclePage';
 
 
 
@@ -52,6 +53,7 @@ function App() {
             <Route path="/aws" element={<AwsPage />} />
             <Route path="/azure" element = {<AzurePage />} />
             <Route path="/gcp" element = {<GcpPage />} />
+            <Route path="/oracle" element = {<OraclePage />} />
             {/* Add a NotFoundPage route if desired */}
           </Routes>
           </Container>
