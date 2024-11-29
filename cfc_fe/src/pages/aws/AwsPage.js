@@ -87,7 +87,31 @@ const ViewMoreButton = styled.button`
   font-size: inherit;
 `;
 
-const [selectedServices, setSelectedServices] = useState([]);
+const ProceedButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block; // Make it a block-level element
+  width: fit-content; // Make the width fit the content
+  margin-left: auto; // Push the button to the right
+  margin-right: auto; // Center the button
+`;
+
+  
+
+
+const AwsPage = () => {
+  const [services, setServices] = useState([]);
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [expandedDescriptions, setExpandedDescriptions] = useState({}); // Store expanded state for each service
+  const servicesPerPage = 10;
+  const [selectedServices, setSelectedServices] = useState([]);
 
   const handleServiceSelect = (serviceName) => {
     setSelectedServices((prevSelected) => {
@@ -100,18 +124,9 @@ const [selectedServices, setSelectedServices] = useState([]);
   };
 
   const handleProceed = () => {
-    onServiceSelect(selectedServices);
+    handleServiceSelect(selectedServices);
   };
-
-
-const AwsPage = () => {
-  const [services, setServices] = useState([]);
-  const [filteredServices, setFilteredServices] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [expandedDescriptions, setExpandedDescriptions] = useState({}); // Store expanded state for each service
-  const servicesPerPage = 10;
-
+  
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -150,8 +165,7 @@ const AwsPage = () => {
     indexOfLastService
   );
 
-  const   
- handleSearchChange = (event) => {
+  const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
