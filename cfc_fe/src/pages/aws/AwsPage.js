@@ -87,6 +87,23 @@ const ViewMoreButton = styled.button`
   font-size: inherit;
 `;
 
+const [selectedServices, setSelectedServices] = useState([]);
+
+  const handleServiceSelect = (serviceName) => {
+    setSelectedServices((prevSelected) => {
+      if (prevSelected.includes(serviceName)) {
+        return prevSelected.filter((name) => name !== serviceName);
+      } else {
+        return [...prevSelected, serviceName];
+      }
+    });
+  };
+
+  const handleProceed = () => {
+    onServiceSelect(selectedServices);
+  };
+
+
 const AwsPage = () => {
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
@@ -166,11 +183,20 @@ const AwsPage = () => {
       <GridContainer>
         {currentServices.map((service) => {
           const isLongDescription = service.description.length > 100; // Adjust threshold as needed
-          const showFullDescription = expandedDescriptions[service.description] || false;
+          const showFullDescription = expandedDescriptions[service.name] || false;
+          const isSelected = selectedServices.includes(service.name);
 
           return (
             <ServiceCard key={service.name}>
-              <h2>{service.name}</h2>
+              <input
+                type="checkbox"
+                id={service.name}
+                checked={isSelected}
+                onChange={() => handleServiceSelect(service.name)}
+              />
+              <label htmlFor={service.name}>
+                <h2>{service.name}</h2>
+              </label>
               <Description>
                 {showFullDescription
                   ? service.description
@@ -205,6 +231,9 @@ const AwsPage = () => {
           </PaginationButton>
         ))}
       </PaginationContainer>
+      <ProceedButton onClick={handleProceed} disabled={selectedServices.length === 0}>
+        Proceed to Estimator
+      </ProceedButton>
     </PageContainer>
   );
 };
