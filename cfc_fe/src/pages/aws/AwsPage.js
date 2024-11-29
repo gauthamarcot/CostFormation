@@ -87,6 +87,23 @@ const ViewMoreButton = styled.button`
   font-size: inherit;
 `;
 
+const ProceedButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block; // Make it a block-level element
+  width: fit-content; // Make the width fit the content
+  margin-left: auto; // Push the button to the right
+  margin-right: auto; // Center the button
+`;
+
+  
+
+
 const AwsPage = () => {
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
@@ -94,7 +111,22 @@ const AwsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedDescriptions, setExpandedDescriptions] = useState({}); // Store expanded state for each service
   const servicesPerPage = 10;
+  const [selectedServices, setSelectedServices] = useState([]);
 
+  const handleServiceSelect = (serviceName) => {
+    setSelectedServices((prevSelected) => {
+      if (prevSelected.includes(serviceName)) {
+        return prevSelected.filter((name) => name !== serviceName);
+      } else {
+        return [...prevSelected, serviceName];
+      }
+    });
+  };
+
+  const handleProceed = () => {
+    handleServiceSelect(selectedServices);
+  };
+  
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -133,8 +165,7 @@ const AwsPage = () => {
     indexOfLastService
   );
 
-  const   
- handleSearchChange = (event) => {
+  const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
@@ -166,11 +197,20 @@ const AwsPage = () => {
       <GridContainer>
         {currentServices.map((service) => {
           const isLongDescription = service.description.length > 100; // Adjust threshold as needed
-          const showFullDescription = expandedDescriptions[service.description] || false;
+          const showFullDescription = expandedDescriptions[service.name] || false;
+          const isSelected = selectedServices.includes(service.name);
 
           return (
             <ServiceCard key={service.name}>
-              <h2>{service.name}</h2>
+              <input
+                type="checkbox"
+                id={service.name}
+                checked={isSelected}
+                onChange={() => handleServiceSelect(service.name)}
+              />
+              <label htmlFor={service.name}>
+                <h2>{service.name}</h2>
+              </label>
               <Description>
                 {showFullDescription
                   ? service.description
@@ -205,6 +245,9 @@ const AwsPage = () => {
           </PaginationButton>
         ))}
       </PaginationContainer>
+      <ProceedButton onClick={handleProceed} disabled={selectedServices.length === 0}>
+        Proceed to Estimator
+      </ProceedButton>
     </PageContainer>
   );
 };
