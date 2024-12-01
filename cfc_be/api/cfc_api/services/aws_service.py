@@ -17,6 +17,7 @@ def aws_services_list():
         print("error occurred due to ", e)
 
 
+
 def aws_regions_list():
     try:
         db = db_service.get_client()['cfc_main']
