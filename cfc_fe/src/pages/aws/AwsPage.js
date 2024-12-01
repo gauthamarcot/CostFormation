@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { BiSearchAlt } from "react-icons/bi";
+import { useNavigate } from 'react-router-dom';
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -180,6 +181,10 @@ const AwsPage = () => {
   };
 
   const totalPages = Math.ceil(filteredServices.length / servicesPerPage);
+  const navigate = useNavigate();
+  const handleProceedToEstimator = () => {
+    navigate("/estimator", { state: { selectedServices } });
+  };
 
   return (
     <PageContainer>
@@ -244,7 +249,7 @@ const AwsPage = () => {
           </PaginationButton>
         ))}
       </PaginationContainer>
-      <ProceedButton onClick={handleProceed} disabled={selectedServices.length === 0}>
+      <ProceedButton onClick={handleProceedToEstimator} disabled={selectedServices.length === 0}>
         Proceed to Estimator
       </ProceedButton>
     </PageContainer>

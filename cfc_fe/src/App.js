@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import AzurePage from './pages/azure/AzurePage';
 import GcpPage from './pages/gcp/GcpPage';
 import OraclePage from './pages/oracle/OraclePage';
-
+import EstimatorPage from './pages/estimator/estimator';
 
 
 const lightTheme = {
@@ -54,6 +54,7 @@ function App() {
             <Route path="/azure" element = {<AzurePage />} />
             <Route path="/gcp" element = {<GcpPage />} />
             <Route path="/oracle" element = {<OraclePage />} />
+            <Route path="/estimator" element = {<EstimatorPage />} />
             {/* Add a NotFoundPage route if desired */}
           </Routes>
           </Container>
