@@ -1,10 +1,30 @@
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import axios from "axios";
+import Carousel from "react-elastic-carousel"; // Or any other carousel library
+
+const EstimatorContainer = styled.div`
+  padding: 2rem;
+`;
+
+const Button = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 1rem;
+`;
+
 const EstimatorPage = () => {
   const { state } = useLocation();
   const selectedServices = state?.selectedServices || [];
   const [estimatorData, setEstimatorData] = useState([]);
   const [formData, setFormData] = useState({});
   const [activeIndex, setActiveIndex] = useState(0);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Corrected the initialization of navigate
 
   useEffect(() => {
     const fetchEstimatorData = async () => {
@@ -37,16 +57,18 @@ const EstimatorPage = () => {
 
   const handleProceedToCalculation = async () => {
     try {
-        const estimations = await axios.post('/api/calculate_cost', estimatorData.map((data,index)=>({
-            provider: data.provider,
-            service: data.service,
-            formData: formData[index]
-          }))
-        );
-        navigate("/result", { state: { estimations:estimations.data } });
-      } catch (error) {
-        console.error("Error calculating cost:", error);
-      }
+      const estimations = await axios.post(
+        "/api/calculate_cost",
+        estimatorData.map((data, index) => ({
+          provider: data.provider,
+          service: data.service,
+          formData: formData[index],
+        }))
+      );
+      navigate("/result", { state: { estimations: estimations.data } });
+    } catch (error) {
+      console.error("Error calculating cost:", error);
+    }
   };
 
   const handleGenerateCode = () => {
@@ -57,6 +79,7 @@ const EstimatorPage = () => {
   return (
     <EstimatorContainer>
       <h2>Estimator</h2>
+      <br />
       <Carousel
         itemsToShow={1}
         enableAutoPlay={false}
@@ -84,8 +107,7 @@ const EstimatorPage = () => {
                   <input
                     type={field.type}
                     id={field.name}
-                    name={field.name}   
-
+                    name={field.name}
                     onChange={(e) => handleInputChange(e, index)}
                   />
                 )}
