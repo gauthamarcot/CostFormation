@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-EditorContainer = styled.div`
+const EditorContainer = styled.div`
   padding: 2rem;
 `;
 
