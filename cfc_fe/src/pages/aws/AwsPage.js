@@ -126,7 +126,7 @@ const AwsPage = () => {
   const handleProceed = () => {
     handleServiceSelect(selectedServices);
   };
-  
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -159,8 +159,7 @@ const AwsPage = () => {
 
   const indexOfLastService = currentPage * servicesPerPage;
   const indexOfFirstService = indexOfLastService - servicesPerPage;
-  const currentServices   
- = filteredServices.slice(
+  const currentServices = filteredServices.slice(
     indexOfFirstService,
     indexOfLastService
   );

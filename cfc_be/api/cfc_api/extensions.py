@@ -6,7 +6,7 @@ password = parse.quote_plus(password)
 
 MONGODB = "cfc_main"
 MONGO_URI = f"mongodb+srv://{username}:{password}@tpfecluster.vslsueh.mongodb.net/?retryWrites=true&w=majority&appName=TPFECluster"
-MONGODB_LOCAL_URI = "mongodb://13.201.34.47:27017/?retryWrites=true&loadBalanced=false&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000"
+MONGODB_LOCAL_URI = "mongodb://65.1.131.242:27017/?retryWrites=true&loadBalanced=false&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000"
 
 from pymongo.mongo_client import MongoClient
 
