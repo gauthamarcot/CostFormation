@@ -35,6 +35,7 @@ A multi-cloud resource cost calculator and deployment template generator.
   - **GCP**: Deployment Manager templates (YAML/JSON)
   - **Oracle Cloud**: Resource Manager templates
   - **IBM Cloud**: Schematics templates
+- **Cloud Cost Comaprision**: Mutli cloud cost comparision for better price for resource needs
 - **Best Practices**: Incorporates cloud provider best practices for security, scalability, and reliability.
 - **Customization**: Allows users to customize and parameterize their deployment templates.
 - **Open Source**: Community-driven project encouraging collaboration and contributions.
