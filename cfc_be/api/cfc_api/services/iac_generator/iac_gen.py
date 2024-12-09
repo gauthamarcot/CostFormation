@@ -5,6 +5,7 @@ from aws_cdk import (
     # ... other AWS CDK modules
 )
 
+
 def iac_generator(service, **kwargs):
     app = cdk.App()
     stack_name = kwargs.pop("stack_name", "MyStack")
@@ -16,18 +17,18 @@ def iac_generator(service, **kwargs):
 
         # Create EC2 instance
         ec2.Instance(stack, "MyEC2Instance",
-            instance_type=ec2.InstanceType(instance_type),
-            machine_image=ec2.MachineImage.latest_amazon_linux(),
-            # ... other EC2 properties
-        )
+                     instance_type=ec2.InstanceType(instance_type),
+                     machine_image=ec2.MachineImage.latest_amazon_linux(),
+                     # ... other EC2 properties
+                     )
 
     elif service == "s3":
         # ... S3 parameters from kwargs
 
         # Create S3 bucket
         s3.Bucket(stack, "MyS3Bucket",
-            # ... S3 properties
-        )
+                  # ... S3 properties
+                  )
 
     # ... add more services here
 
