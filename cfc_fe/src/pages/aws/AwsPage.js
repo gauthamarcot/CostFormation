@@ -132,7 +132,7 @@ const AwsPage = () => {
     const fetchServices = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:5000/cfc/v1/auth/cp_service/aws/services"
+          "http://127.0.0.1:5000/cfc/v1/cp_service/aws/services"
         );
         setServices(response.data);
         setFilteredServices(response.data);

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import Carousel from "react-elastic-carousel"; // Or any other carousel library
+import GenericFormBuilder from "../../components/GenericFormBuilder";
 
 const EstimatorContainer = styled.div`
   padding: 2rem;
@@ -18,6 +19,7 @@ const Button = styled.button`
   margin-right: 1rem;
 `;
 
+
 const EstimatorPage = () => {
   const { state } = useLocation();
   const selectedServices = state?.selectedServices || [];
@@ -30,8 +32,8 @@ const EstimatorPage = () => {
     const fetchEstimatorData = async () => {
       try {
         const responses = await Promise.all(
-            axios.get("/api/estimator", {
-              params: { provider: "aws", service: selectedServices },
+            axios.post("http://127.0.0.1:5000/cfc/v1/cloud-estimators/api/estimator", {
+              provider: "aws", service: selectedServices,
             })
         );
         setEstimatorData(responses.map((response) => response.data));
@@ -83,36 +85,7 @@ const EstimatorPage = () => {
         enableAutoPlay={false}
         onChange={(currentItem) => setActiveIndex(currentItem.index)}
       >
-        {estimatorData.map((data, index) => (
-          <div key={data.service}>
-            <h3>{data.service}</h3>
-            {data.formFields.map((field) => (
-              <div key={field.name}>
-                <label htmlFor={field.name}>{field.label}</label>
-                {field.type === "select" ? (
-                  <select
-                    id={field.name}
-                    name={field.name}
-                    onChange={(e) => handleInputChange(e, index)}
-                  >
-                    {field.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={field.type}
-                    id={field.name}
-                    name={field.name}
-                    onChange={(e) => handleInputChange(e, index)}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
+        <GenericFormBuilder schema={estimatorData} />
       </Carousel>
       <div>
         <Button onClick={handleProceedToCalculation}>
