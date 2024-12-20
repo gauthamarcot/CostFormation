@@ -30,11 +30,9 @@ const EstimatorPage = () => {
     const fetchEstimatorData = async () => {
       try {
         const responses = await Promise.all(
-          selectedServices.map((service) =>
             axios.get("/api/estimator", {
-              params: { provider: "aws", service: service.name },
+              params: { provider: "aws", service: selectedServices },
             })
-          )
         );
         setEstimatorData(responses.map((response) => response.data));
       } catch (error) {
