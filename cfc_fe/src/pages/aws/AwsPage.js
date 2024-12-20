@@ -183,6 +183,7 @@ const AwsPage = () => {
   const totalPages = Math.ceil(filteredServices.length / servicesPerPage);
   const navigate = useNavigate();
   const handleProceedToEstimator = () => {
+    console.log("service passing to estimator", selectedServices.toString())
     navigate("/estimator", { state: { selectedServices } });
   };
 

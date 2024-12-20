@@ -1,61 +1,42 @@
 from azure.core.rest import HttpRequest
 from flask import jsonify
 
-from cfc_be.api.cfc_api.services.estimator.aws_estimator import get_aws_pricing_data, calculate_aws_cost
+from cfc_be.api.cfc_api.services.estimator.aws_estimator import calculate_aws_cost, \
+    get_aws_estimator
 from cfc_be.api.cfc_api.services.estimator.azure_estimator import calculate_azure_cost, get_azure_pricing_data
 from cfc_be.api.cfc_api.services.estimator.gcp_estimator import calculate_gcp_cost, get_gcp_pricing_data
 
 
-def get_pricing_data(provider, service):
+def get_estimator_service_form(service, provider):
     try:
         if provider == 'aws':
-            pricing_data = get_aws_pricing_data(service)
+            estimator_from = get_aws_estimator(service)
         elif provider == 'azure':
-            pricing_data = get_azure_pricing_data(service)
+            estimator_from = get_azure_pricing_data(service)
         elif provider == 'gcp':
-            pricing_data = get_gcp_pricing_data(service)
+            estimator_from = get_gcp_pricing_data(service)
         else:
             raise ValueError("Invalid provider")
-        return pricing_data
+        return estimator_from
     except Exception as e:
         raise e
-
 
 
 def estimator_controller(jobj):
     try:
         provider = jobj.get('provider')
-        service = jobj.get('service')
-
-        if not provider or not service:
+        services = jobj.get('services')
+        formated_services = [x.lower().replace(' ', '_') for x in services]
+        if not provider or not services:
             raise ValueError("Missing provider or service")
-
-        # Access pricing data from your pricing collections
-        pricing_data = get_pricing_data(provider, service)
-
-        # Example: Construct form fields dynamically based on pricing data
-        form_fields = []
-        for field_name, field_data in pricing_data.items():
-            field = {
-                "type": field_data.get("type", "text"),  # Default to "text" if type is not specified
-                "label": field_data.get("label", field_name),  # Use field_name as label if not specified
-                "name": field_name
-            }
-            if field["type"] == "select":
-                field["options"] = field_data.get("options", [])
-            form_fields.append(field)
-
-        response_data = {
-            "provider": provider,
-            "service": service,
-            "formFields": form_fields
-        }
-        return response_data, 200  # Return the response data and a 200 OK status code
-
+        aws_services_form = get_estimator_service_form(formated_services, provider)
+        if len(aws_services_form) == 0:
+            raise ValueError("invalid provider or service")
+        return aws_services_form, 200  # Return the response data and a 200 OK status code
     except (KeyError, ValueError) as e:
         return {"error": str(e)}, 400  # Return a 400 Bad Request error for invalid input
     except Exception as e:
-        return {"error": "Internal server error"}, 500  # Return a 500 Internal Server Error for other exceptions
+        return {"error": f"Internal server error {e}"}, 500  # Return a 500 Internal Server Error for other exceptions
 
 
 def cloud_calculator_controller(jobj):
