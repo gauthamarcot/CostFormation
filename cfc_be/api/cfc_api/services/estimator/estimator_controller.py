@@ -25,7 +25,7 @@ def get_estimator_service_form(service, provider):
 def estimator_controller(jobj):
     try:
         provider = jobj.get('provider')
-        services = jobj.get('services')
+        services = jobj.get('service')
         formated_services = [x.lower().replace(' ', '_') for x in services]
         if not provider or not services:
             raise ValueError("Missing provider or service")
