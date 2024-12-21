@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import Carousel from "react-elastic-carousel"; // Or any other carousel library
-
+import GenericFormBuilder from "../../components/GenericFormBuilder"; // Correct (assuming the path is correct)
 const EstimatorContainer = styled.div`
   padding: 2rem;
 `;
@@ -18,6 +18,7 @@ const Button = styled.button`
   margin-right: 1rem;
 `;
 
+
 const EstimatorPage = () => {
   const { state } = useLocation();
   const selectedServices = state?.selectedServices || [];
@@ -29,12 +30,13 @@ const EstimatorPage = () => {
   useEffect(() => {
     const fetchEstimatorData = async () => {
       try {
-        const responses = await Promise.all(
-            axios.get("/api/estimator", {
-              params: { provider: "aws", service: selectedServices },
-            })
-        );
-        setEstimatorData(responses.map((response) => response.data));
+        console.log('selectedServices', selectedServices);
+        const responses = await 
+          axios.post("http://127.0.0.1:5000/cfc/v1/cloud-estimators/api/estimator", {
+            provider: "aws", service: selectedServices,
+          });
+        setEstimatorData(responses.data);
+        console.log("Data after the estimator api", responses.data);
       } catch (error) {
         console.error("Error fetching estimator data:", error);
       }
@@ -42,6 +44,10 @@ const EstimatorPage = () => {
 
     fetchEstimatorData();
   }, [selectedServices]);
+
+  useEffect(() => {
+    console.log("Data after the estimator api", estimatorData);
+  }, [estimatorData]);
 
   const handleInputChange = (event, serviceIndex) => {
     setFormData((prevFormData) => ({
@@ -53,26 +59,6 @@ const EstimatorPage = () => {
     }));
   };
 
-  const handleProceedToCalculation = async () => {
-    try {
-      const estimations = await axios.post(
-        "/api/calculate_cost",
-        estimatorData.map((data, index) => ({
-          provider: data.provider,
-          service: data.service,
-          formData: formData[index],
-        }))
-      );
-      navigate("/result", { state: { estimations: estimations.data } });
-    } catch (error) {
-      console.error("Error calculating cost:", error);
-    }
-  };
-
-  const handleGenerateCode = () => {
-    // Call iac_generator API with formData
-    console.log("Generating code with formData:", formData);
-  };
 
   return (
     <EstimatorContainer>
@@ -83,43 +69,11 @@ const EstimatorPage = () => {
         enableAutoPlay={false}
         onChange={(currentItem) => setActiveIndex(currentItem.index)}
       >
-        {estimatorData.map((data, index) => (
-          <div key={data.service}>
-            <h3>{data.service}</h3>
-            {data.formFields.map((field) => (
-              <div key={field.name}>
-                <label htmlFor={field.name}>{field.label}</label>
-                {field.type === "select" ? (
-                  <select
-                    id={field.name}
-                    name={field.name}
-                    onChange={(e) => handleInputChange(e, index)}
-                  >
-                    {field.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={field.type}
-                    id={field.name}
-                    name={field.name}
-                    onChange={(e) => handleInputChange(e, index)}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
+        {estimatorData.map((schema) => (
+        <GenericFormBuilder key={schema.id} schema={schema} />
+      ))}
       </Carousel>
-      <div>
-        <Button onClick={handleProceedToCalculation}>
-          Proceed to Calculation
-        </Button>
-        <Button onClick={handleGenerateCode}>Generate Code</Button>
-      </div>
+      
     </EstimatorContainer>
   );
 };
