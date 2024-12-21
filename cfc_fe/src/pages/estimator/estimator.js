@@ -59,26 +59,6 @@ const EstimatorPage = () => {
     }));
   };
 
-  const handleProceedToCalculation = async () => {
-    try {
-      const estimations = await axios.post(
-        "/api/calculate_cost",
-        estimatorData.map((data, index) => ({
-          provider: data.provider,
-          service: data.service,
-          formData: formData[index],
-        }))
-      );
-      navigate("/result", { state: { estimations: estimations.data } });
-    } catch (error) {
-      console.error("Error calculating cost:", error);
-    }
-  };
-
-  const handleGenerateCode = () => {
-    // Call iac_generator API with formData
-    console.log("Generating code with formData:", formData);
-  };
 
   return (
     <EstimatorContainer>
@@ -93,12 +73,7 @@ const EstimatorPage = () => {
         <GenericFormBuilder key={schema.id} schema={schema} />
       ))}
       </Carousel>
-      <div>
-        <Button onClick={handleProceedToCalculation}>
-          Proceed to Calculation
-        </Button>
-        <Button onClick={handleGenerateCode}>Generate Code</Button>
-      </div>
+      
     </EstimatorContainer>
   );
 };
