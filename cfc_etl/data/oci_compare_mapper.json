@@ -1,0 +1,282 @@
+[
+  {
+    "oci": {
+      "service_name": "Compute",
+      "categories": ["Compute"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon EC2"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Compute Engine"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Virtual Machines"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Object Storage",
+      "categories": ["Storage", "Object Storage"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon S3"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Storage"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Blob Storage"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Database",
+      "categories": ["Database", "Relational Database"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon RDS"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud SQL"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Azure SQL Database"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "NoSQL Database Cloud Service",
+      "categories": ["Database", "NoSQL Database"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon DynamoDB"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Spanner"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Cosmos DB"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Autonomous Data Warehouse",
+      "categories": ["Database", "Data Warehousing"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon Redshift"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "BigQuery"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Azure Synapse Analytics"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Data Flow",
+      "categories": ["Analytics", "Big Data"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon EMR"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Dataproc"
+      },
+      {
+        "provider": "azure",
+        "service_name": "HDInsight"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Streaming",
+      "categories": ["Analytics", "Stream Processing"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon Kinesis"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Pub/Sub"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Event Hubs"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Functions",
+      "categories": ["Compute", "Serverless"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "AWS Lambda"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Functions"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Azure Functions"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Queue Storage",
+      "categories": ["Application Integration", "Messaging"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon SQS"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Pub/Sub"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Service Bus"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Notifications",
+      "categories": ["Application Integration", "Messaging"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon SNS"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Pub/Sub"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Notification Hubs"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "API Gateway",
+      "categories": ["Application Integration", "API Management"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon API Gateway"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud Endpoints"
+      },
+      {
+        "provider": "azure",
+        "service_name": "API Management"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "CDN",
+      "categories": ["Networking", "CDN"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon CloudFront"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud CDN"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Azure CDN"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "DNS",
+      "categories": ["Networking", "DNS"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon Route 53"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Cloud DNS"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Azure DNS"
+      }
+    ]
+  },
+  {
+    "oci": {
+      "service_name": "Virtual Cloud Network",
+      "categories": ["Networking", "Virtual Network"]
+    },
+    "mappings": [
+      {
+        "provider": "aws",
+        "service_name": "Amazon VPC"
+      },
+      {
+        "provider": "gcp",
+        "service_name": "Virtual Private Cloud"
+      },
+      {
+        "provider": "azure",
+        "service_name": "Virtual Network"
+      }
+    ]
+  }
+]
