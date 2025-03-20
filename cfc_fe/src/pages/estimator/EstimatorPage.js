@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTrash, FaCalculator, FaPlus, FaChartLine, FaCode, FaSave, FaShare, FaDownload } from 'react-icons/fa';
-import { mockTemplates } from '../../services/mockData';
+import { mockTemplates, mockServices } from '../../services/mockData';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -505,6 +505,72 @@ const Step = styled.div`
   }
 `;
 
+const ComparisonModal = styled(motion.div)`
+  position: relative;
+  background: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => theme.spacing.xl};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  box-shadow: ${({ theme }) => theme.shadows.lg};
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1000;
+  margin: auto;
+
+  @media (max-width: 768px) {
+    width: 95%;
+    padding: ${({ theme }) => theme.spacing.md};
+  }
+`;
+
+const ComparisonTable = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  margin-top: ${({ theme }) => theme.spacing.lg};
+`;
+
+const ComparisonRow = styled.div`
+  display: grid;
+  grid-template-columns: 200px repeat(${props => props.providers}, 1fr);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const ComparisonHeader = styled(ComparisonRow)`
+  font-weight: bold;
+  background: ${({ theme }) => theme.colors.background};
+  position: sticky;
+  top: 0;
+  z-index: 1;
+`;
+
+const ComparisonCell = styled.div`
+  padding: ${({ theme }) => theme.spacing.md};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  
+  ${({ highlight, theme }) => highlight && `
+    color: ${theme.colors.primary};
+    font-weight: bold;
+  `}
+  
+  ${({ metric, theme }) => metric && `
+    background: ${theme.colors.background};
+    font-weight: 500;
+  `}
+`;
+
+const CompareButton = styled(ActionButton)`
+  background: ${({ theme }) => theme.colors.primary}10;
+  border-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
 const EstimatorPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -514,11 +580,14 @@ const EstimatorPage = () => {
   const [showTemplate, setShowTemplate] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState(null);
   const [templateFormat, setTemplateFormat] = useState('yaml');
-  const [currentStep, setCurrentStep] = useState(1); // 1: Services, 2: Configuration, 3: Review
+  const [currentStep, setCurrentStep] = useState(1);
+  const [showComparison, setShowComparison] = useState(false);
+  const [comparisonData, setComparisonData] = useState(null);
 
   useEffect(() => {
-    if (location.state?.services) {
-      const newService = location.state.services;
+    const { services, provider } = location.state || {};
+    if (services) {
+      const newService = services;
       const serviceExists = selectedServices.some(service => service.id === newService.id);
       if (!serviceExists) {
         setSelectedServices(prev => [...prev, newService]);
@@ -526,9 +595,9 @@ const EstimatorPage = () => {
           ...prev,
           [newService.id]: {
             quantity: 1,
-            region: location.state.provider === 'aws' ? 'us-east-1' : 
-                    location.state.provider === 'azure' ? 'eastus' :
-                    location.state.provider === 'gcp' ? 'us-central1' : 
+            region: provider === 'aws' ? 'us-east-1' : 
+                    provider === 'azure' ? 'eastus' :
+                    provider === 'gcp' ? 'us-central1' : 
                     'us-phoenix-1',
             instanceType: 't2.micro',
             storage: 100,
@@ -537,7 +606,7 @@ const EstimatorPage = () => {
         }));
       }
     }
-  }, [location.state?.services, selectedServices, location.state?.provider]);
+  }, [location.state, selectedServices]);
 
   useEffect(() => {
     // Calculate total cost based on configurations
@@ -657,6 +726,141 @@ const EstimatorPage = () => {
   const handleShareEstimate = () => {
     // TODO: Implement share functionality
     console.log('Sharing estimate:', { selectedServices, configurations, totalCost });
+  };
+
+  const generateComparisonData = () => {
+    const providers = ['aws', 'azure', 'gcp', 'oracle'];
+    const baseServices = selectedServices.map(service => ({
+      name: service.name,
+      category: service.category,
+      config: configurations[service.id]
+    }));
+
+    const comparison = {
+      services: baseServices.map(baseService => {
+        const alternatives = providers.map(provider => {
+          const mockService = mockServices[provider].find(s => 
+            s.category === baseService.category &&
+            s.name.toLowerCase().includes(baseService.category.toLowerCase())
+          );
+
+          if (!mockService) return null;
+
+          return {
+            provider,
+            name: mockService.name,
+            hourly: mockService.pricing.hourly * (baseService.config?.quantity || 1),
+            monthly: mockService.pricing.monthly * (baseService.config?.quantity || 1),
+            features: mockService.features
+          };
+        }).filter(Boolean);
+
+        return {
+          category: baseService.category,
+          alternatives
+        };
+      })
+    };
+
+    setComparisonData(comparison);
+    setShowComparison(true);
+  };
+
+  const findBestPrice = (alternatives, type) => {
+    const prices = alternatives.map(alt => alt[type]);
+    return Math.min(...prices);
+  };
+
+  const renderComparisonModal = () => {
+    if (!comparisonData) return null;
+
+    return (
+      <>
+        <ModalOverlay
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowComparison(false)}
+        />
+        <ComparisonModal
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+        >
+          <TemplateHeader>
+            <h2>Cloud Service Comparison</h2>
+            <ActionButton onClick={() => setShowComparison(false)}>
+              Close
+            </ActionButton>
+          </TemplateHeader>
+
+          <ComparisonTable>
+            {comparisonData.services.map((service, serviceIndex) => {
+              const providers = [...new Set(service.alternatives.map(alt => alt.provider))];
+              const bestHourly = findBestPrice(service.alternatives, 'hourly');
+              const bestMonthly = findBestPrice(service.alternatives, 'monthly');
+
+              return (
+                <React.Fragment key={serviceIndex}>
+                  <ComparisonHeader providers={providers.length}>
+                    <ComparisonCell metric>{service.category}</ComparisonCell>
+                    {providers.map(provider => (
+                      <ComparisonCell key={provider}>
+                        {provider.toUpperCase()}
+                      </ComparisonCell>
+                    ))}
+                  </ComparisonHeader>
+
+                  <ComparisonRow providers={providers.length}>
+                    <ComparisonCell metric>Service Name</ComparisonCell>
+                    {service.alternatives.map((alt, index) => (
+                      <ComparisonCell key={index}>
+                        {alt.name}
+                      </ComparisonCell>
+                    ))}
+                  </ComparisonRow>
+
+                  <ComparisonRow providers={providers.length}>
+                    <ComparisonCell metric>Hourly Cost</ComparisonCell>
+                    {service.alternatives.map((alt, index) => (
+                      <ComparisonCell 
+                        key={index}
+                        highlight={alt.hourly === bestHourly}
+                      >
+                        ${alt.hourly.toFixed(2)}
+                      </ComparisonCell>
+                    ))}
+                  </ComparisonRow>
+
+                  <ComparisonRow providers={providers.length}>
+                    <ComparisonCell metric>Monthly Cost</ComparisonCell>
+                    {service.alternatives.map((alt, index) => (
+                      <ComparisonCell 
+                        key={index}
+                        highlight={alt.monthly === bestMonthly}
+                      >
+                        ${alt.monthly.toFixed(2)}
+                      </ComparisonCell>
+                    ))}
+                  </ComparisonRow>
+
+                  <ComparisonRow providers={providers.length}>
+                    <ComparisonCell metric>Features</ComparisonCell>
+                    {service.alternatives.map((alt, index) => (
+                      <ComparisonCell key={index}>
+                        {alt.features.map((feature, fIndex) => (
+                          <Feature key={fIndex}>{feature}</Feature>
+                        ))}
+                      </ComparisonCell>
+                    ))}
+                  </ComparisonRow>
+                </React.Fragment>
+              );
+            })}
+          </ComparisonTable>
+        </ComparisonModal>
+      </>
+    );
   };
 
   if (selectedServices.length === 0) {
@@ -918,6 +1122,13 @@ const EstimatorPage = () => {
             >
               <FaCode /> Generate Template
             </ActionButton>
+            <CompareButton
+              onClick={generateComparisonData}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FaChartLine /> Compare Providers
+            </CompareButton>
             <ActionButton
               onClick={handleSaveEstimate}
               whileHover={{ scale: 1.05 }}
@@ -975,8 +1186,12 @@ const EstimatorPage = () => {
           </TemplateModal>
         </>
       )}
+
+      <AnimatePresence>
+        {showComparison && renderComparisonModal()}
+      </AnimatePresence>
     </PageContainer>
   );
 };
 
-export default EstimatorPage; 
+export default EstimatorPage;
