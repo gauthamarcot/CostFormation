@@ -511,29 +511,25 @@ const EstimatorPage = () => {
   const [selectedServices, setSelectedServices] = useState([]);
   const [configurations, setConfigurations] = useState({});
   const [totalCost, setTotalCost] = useState({ hourly: 0, monthly: 0 });
-  const [showCostBreakdown, setShowCostBreakdown] = useState(false);
   const [showTemplate, setShowTemplate] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState(null);
   const [templateFormat, setTemplateFormat] = useState('yaml');
   const [currentStep, setCurrentStep] = useState(1); // 1: Services, 2: Configuration, 3: Review
 
   useEffect(() => {
-    if (location.state?.service) {
-      const newService = {
-        ...location.state.service,
-        provider: location.state.provider || 'azure'
-      };
-      
-      // Check if service already exists
+    if (location.state?.services) {
+      const newService = location.state.services;
       const serviceExists = selectedServices.some(service => service.id === newService.id);
-      
       if (!serviceExists) {
         setSelectedServices(prev => [...prev, newService]);
         setConfigurations(prev => ({
           ...prev,
           [newService.id]: {
             quantity: 1,
-            region: 'us-east-1',
+            region: location.state.provider === 'aws' ? 'us-east-1' : 
+                    location.state.provider === 'azure' ? 'eastus' :
+                    location.state.provider === 'gcp' ? 'us-central1' : 
+                    'us-phoenix-1',
             instanceType: 't2.micro',
             storage: 100,
             bandwidth: 1000
@@ -541,7 +537,7 @@ const EstimatorPage = () => {
         }));
       }
     }
-  }, [location.state?.service]);
+  }, [location.state?.services, selectedServices, location.state?.provider]);
 
   useEffect(() => {
     // Calculate total cost based on configurations
@@ -732,6 +728,9 @@ const EstimatorPage = () => {
                       <Feature key={index}>{feature}</Feature>
                     ))}
                   </FeaturesList>
+                  <div style={{ marginTop: '1rem', color: 'var(--text-light)' }}>
+                    Quantity: {configurations[service.id]?.quantity || 1}
+                  </div>
                 </ServiceItem>
               ))}
             </AnimatePresence>
