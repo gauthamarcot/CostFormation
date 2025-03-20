@@ -361,19 +361,17 @@ const CostBreakdownValue = styled.div`
 `;
 
 const TemplateModal = styled(motion.div)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   background: ${({ theme }) => theme.colors.surface};
   padding: ${({ theme }) => theme.spacing.xl};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
-  width: 80%;
+  width: 90%;
   max-width: 800px;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
   z-index: 1000;
+  margin: auto;
 
   @media (max-width: 768px) {
     width: 95%;
@@ -389,6 +387,10 @@ const ModalOverlay = styled(motion.div)`
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing.md};
 `;
 
 const TemplateHeader = styled.div`
@@ -521,19 +523,25 @@ const EstimatorPage = () => {
         ...location.state.service,
         provider: location.state.provider || 'azure'
       };
-      setSelectedServices(prev => [...prev, newService]);
-      setConfigurations(prev => ({
-        ...prev,
-        [newService.id]: {
-          quantity: 1,
-          region: 'us-east-1',
-          instanceType: 't2.micro',
-          storage: 100,
-          bandwidth: 1000
-        }
-      }));
+      
+      // Check if service already exists
+      const serviceExists = selectedServices.some(service => service.id === newService.id);
+      
+      if (!serviceExists) {
+        setSelectedServices(prev => [...prev, newService]);
+        setConfigurations(prev => ({
+          ...prev,
+          [newService.id]: {
+            quantity: 1,
+            region: 'us-east-1',
+            instanceType: 't2.micro',
+            storage: 100,
+            bandwidth: 1000
+          }
+        }));
+      }
     }
-  }, [location]);
+  }, [location.state?.service]);
 
   useEffect(() => {
     // Calculate total cost based on configurations
