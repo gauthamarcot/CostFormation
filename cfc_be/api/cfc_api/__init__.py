@@ -1,27 +1,26 @@
-from flask import Flask, Blueprint
+"""Cost Formation Calculator API."""
+from flask import Blueprint
 from flask_restx import Api
 
-from .extensions import db_service
-from .routes import register_routes
+from cfc_be.api.cfc_api.extensions import db_service
+from cfc_be.api.cfc_api.routes import register_routes
+from .routes.iac_generator_route import api as iac_ns
 
+# Create blueprint
+cfc_bp = Blueprint('cfc_bp', __name__, url_prefix='/cfc/v1')
 
+# Create API instance
 api = Api(
-    title='Teleport Pay Trading Frontend',
-    version='0.1',
-    description='Trading algorithm frontend APIs',
-    doc='/fe/docs'
+    cfc_bp,
+    title='Cost Formation Calculator API',
+    version='1.0',
+    description='API for calculating cloud service costs and generating IaC templates',
+    doc='/cfc/docs'
 )
 
-
-def create_backend_app(config_class='config.Config'):
-    app = Flask(__name__)
-    app.config.from_object(config_class)
-
-    cfc_bp = Blueprint('cfc_bp', __name__, url_prefix='/cfc/v1')
-
-    api.init_app(cfc_bp)  # Register the API with the blueprint
-    register_routes(api)  # Register routes with the API
-
-    app.register_blueprint(cfc_bp)
-
-    return cfc_bp  # Return the full app, not just the blueprint
+def create_backend_app():
+    """Create and configure the backend application."""
+    # Register routes
+    register_routes(api)
+    
+    return cfc_bp

@@ -1,9 +1,12 @@
-from cfc_be.api.cfc_api.routes.aws_routes import api as cp_ns
-from cfc_be.api.cfc_api.routes.azure_routes import api as cp_ns
-from cfc_be.api.cfc_api.routes.cp_service_route import api as cp_ns
-from cfc_be.api.cfc_api.routes.cloud_estimators import api as cloud_estimators_ns
+"""Routes registration."""
+from flask_restx import Api
 
+from .cost_calculator_route import api as calculator_ns
+from .service_route import api as service_ns
+from .iac_generator_route import api as iac_ns
 
-def register_routes(api):
-    api.add_namespace(cp_ns, path='/cp_service')
-    api.add_namespace(cloud_estimators_ns, path='/cloud-estimators')
+def register_routes(api: Api):
+    """Register all routes with the API."""
+    api.add_namespace(calculator_ns)
+    api.add_namespace(service_ns)
+    api.add_namespace(iac_ns)

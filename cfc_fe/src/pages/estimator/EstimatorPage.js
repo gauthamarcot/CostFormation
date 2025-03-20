@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTrash, FaCalculator, FaPlus, FaChartLine, FaCode, FaSave, FaShare, FaDownload } from 'react-icons/fa';
 import { mockTemplates, mockServices } from '../../services/mockData';
+import { serviceApi } from '../../services/api';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -571,6 +572,26 @@ const CompareButton = styled(ActionButton)`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
+const ErrorMessage = styled.div`
+  color: ${({ theme }) => theme.colors.error};
+  margin-top: ${({ theme }) => theme.spacing.md};
+`;
+
+const LoadingSpinner = styled.div`
+  border: 4px solid ${({ theme }) => theme.colors.primary}20;
+  border-top: 4px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 const EstimatorPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -583,47 +604,65 @@ const EstimatorPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showComparison, setShowComparison] = useState(false);
   const [comparisonData, setComparisonData] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const { services, provider } = location.state || {};
-    if (services) {
-      const newService = services;
-      const serviceExists = selectedServices.some(service => service.id === newService.id);
-      if (!serviceExists) {
-        setSelectedServices(prev => [...prev, newService]);
-        setConfigurations(prev => ({
-          ...prev,
-          [newService.id]: {
-            quantity: 1,
-            region: provider === 'aws' ? 'us-east-1' : 
-                    provider === 'azure' ? 'eastus' :
-                    provider === 'gcp' ? 'us-central1' : 
-                    'us-phoenix-1',
-            instanceType: 't2.micro',
-            storage: 100,
-            bandwidth: 1000
-          }
-        }));
-      }
+    if (location.state?.provider) {
+      setSelectedProvider(location.state.provider);
     }
-  }, [location.state, selectedServices]);
+    if (location.state?.services) {
+      setSelectedServices([location.state.services]);
+    }
+  }, [location.state]);
 
-  useEffect(() => {
-    // Calculate total cost based on configurations
-    const hourly = selectedServices.reduce((total, service) => {
-      const config = configurations[service.id];
-      if (!config) return total;
-      return total + (service.pricing.hourly * config.quantity);
-    }, 0);
+  const calculateCosts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-    const monthly = selectedServices.reduce((total, service) => {
-      const config = configurations[service.id];
-      if (!config) return total;
-      return total + (service.pricing.monthly * config.quantity);
-    }, 0);
+      const servicesWithConfig = selectedServices.map(service => ({
+        ...service,
+        ...configurations[service.id]
+      }));
 
-    setTotalCost({ hourly, monthly });
-  }, [selectedServices, configurations]);
+      const result = await serviceApi.calculateCosts(servicesWithConfig);
+      setTotalCost(result.costs);
+      setCurrentStep(2);
+    } catch (err) {
+      setError('Failed to calculate costs. Please try again.');
+      console.error('Error calculating costs:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateTemplate = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const servicesWithConfig = selectedServices.map(service => ({
+        ...service,
+        ...configurations[service.id]
+      }));
+
+      const result = await serviceApi.generateTemplate(
+        servicesWithConfig,
+        templateFormat,
+        selectedProvider
+      );
+
+      setCurrentTemplate(result.template);
+      setShowTemplate(true);
+    } catch (err) {
+      setError('Failed to generate template. Please try again.');
+      console.error('Error generating template:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleRemoveService = (serviceId) => {
     setSelectedServices(prev => prev.filter(service => service.id !== serviceId));
@@ -664,46 +703,6 @@ const EstimatorPage = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
     }
-  };
-
-  const handleGenerateTemplate = () => {
-    const templates = [];
-    
-    selectedServices.forEach(service => {
-      const config = configurations[service.id];
-      if (!config) return;
-
-      const provider = service.provider.toLowerCase();
-      const templateData = mockTemplates[provider];
-      
-      if (templateData) {
-        const providerTemplateType = provider === 'aws' ? 'cloudformation' : 
-                                   provider === 'azure' ? 'arm' :
-                                   provider === 'gcp' ? 'deployment' : 'terraform';
-        
-        let format = templateFormat;
-        if (provider === 'aws' && format === 'bicep') format = 'yaml';
-        if (provider === 'azure' && format === 'hcl') format = 'json';
-        if (provider === 'gcp' && format === 'hcl') format = 'yaml';
-        if (provider === 'oracle' && format === 'bicep') format = 'hcl';
-
-        const template = {
-          provider,
-          service: service.name,
-          format: format,
-          content: templateData[providerTemplateType][format](service, config)
-        };
-        templates.push(template);
-      }
-    });
-
-    if (templates.length === 0) {
-      alert('No templates could be generated. Please check your service configurations.');
-      return;
-    }
-
-    setCurrentTemplate(templates);
-    setShowTemplate(true);
   };
 
   const handleDownloadTemplate = (template) => {
@@ -1080,7 +1079,7 @@ const EstimatorPage = () => {
               value={templateFormat}
               onChange={(e) => {
                 setTemplateFormat(e.target.value);
-                handleGenerateTemplate();
+                generateTemplate();
               }}
             >
               {selectedServices[0]?.provider === 'aws' ? (
@@ -1116,7 +1115,7 @@ const EstimatorPage = () => {
               Previous: Configure Services
             </ActionButton>
             <ActionButton
-              onClick={handleGenerateTemplate}
+              onClick={generateTemplate}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -1190,6 +1189,8 @@ const EstimatorPage = () => {
       <AnimatePresence>
         {showComparison && renderComparisonModal()}
       </AnimatePresence>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {isLoading && <LoadingSpinner />}
     </PageContainer>
   );
 };

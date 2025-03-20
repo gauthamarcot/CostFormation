@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="ff90e447-c22c-4a86-8fb9-1d1b73f056cb" />
+          <option name="name" value="cfc_dedicated (DDL)" />
+          <option name="dbmsName" value="MONGO" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/cfc_etl/data/index.csv" />
+              <option value="file://$PROJECT_DIR$/cfc_etl/data/cfc_aws_pricing_db/amazon_ec2_pricing.sql" />
+            </array>
+          </option>
+          <option name="outLayout" value="File per object by schema.groovy" />
+        </State>
+      </list>
+    </option>
+  </component>
+</project>

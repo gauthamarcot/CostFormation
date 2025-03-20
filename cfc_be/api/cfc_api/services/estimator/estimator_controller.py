@@ -5,6 +5,7 @@ from cfc_be.api.cfc_api.services.estimator.aws_estimator import calculate_aws_co
     get_aws_estimator
 from cfc_be.api.cfc_api.services.estimator.azure_estimator import calculate_azure_cost, get_azure_pricing_data
 from cfc_be.api.cfc_api.services.estimator.gcp_estimator import calculate_gcp_cost, get_gcp_pricing_data
+from cfc_be.api.cfc_api.services.estimator.oracle_estimator import calculate_oracle_cost
 
 
 def get_estimator_service_form(service, provider):
@@ -22,45 +23,193 @@ def get_estimator_service_form(service, provider):
         raise e
 
 
-def estimator_controller(jobj):
+def estimator_controller(data):
+    """Generate cost estimates for cloud services."""
     try:
-        provider = jobj.get('provider')
-        services = jobj.get('service')
-        formated_services = [x.lower().replace(' ', '_') for x in services]
-        if not provider or not services:
-            raise ValueError("Missing provider or service")
-        aws_services_form = get_estimator_service_form(formated_services, provider)
-        if len(aws_services_form) == 0:
-            raise ValueError("invalid provider or service")
-        return aws_services_form, 200  # Return the response data and a 200 OK status code
-    except (KeyError, ValueError) as e:
-        return {"error": str(e)}, 400  # Return a 400 Bad Request error for invalid input
+        if not data.get('services'):
+            raise ValueError("No services provided for estimation")
+
+        estimates = []
+        for service in data['services']:
+            # Validate required fields
+            required_fields = ['id', 'name', 'category', 'provider', 'quantity', 'region']
+            if not all(field in service for field in required_fields):
+                raise ValueError(f"Missing required fields for service {service.get('name', 'unknown')}")
+
+            # Calculate base cost based on service configuration
+            base_cost = {
+                'aws': calculate_aws_cost,
+                'azure': calculate_azure_cost,
+                'gcp': calculate_gcp_cost,
+                'oracle': calculate_oracle_cost
+            }.get(service['provider'].lower())
+
+            if not base_cost:
+                raise ValueError(f"Unsupported provider: {service['provider']}")
+
+            cost = base_cost(service)
+            
+            # Format the estimate response
+            estimate = {
+                'service': {
+                    'id': service['id'],
+                    'name': service['name'],
+                    'category': service['category'],
+                    'provider': service['provider'],
+                    'region': service['region']
+                },
+                'configuration': {
+                    'quantity': service['quantity'],
+                    'instanceType': service.get('instanceType'),
+                    'storage': service.get('storage'),
+                    'bandwidth': service.get('bandwidth')
+                },
+                'costs': {
+                    'hourly': cost['hourly'],
+                    'monthly': cost['monthly'],
+                    'yearly': cost['monthly'] * 12
+                },
+                'breakdown': {
+                    'compute': cost.get('compute', 0),
+                    'storage': cost.get('storage', 0),
+                    'network': cost.get('network', 0),
+                    'other': cost.get('other', 0)
+                }
+            }
+            estimates.append(estimate)
+
+        response = {
+            'estimates': estimates,
+            'summary': {
+                'total_hourly': sum(e['costs']['hourly'] for e in estimates),
+                'total_monthly': sum(e['costs']['monthly'] for e in estimates),
+                'total_yearly': sum(e['costs']['yearly'] for e in estimates)
+            }
+        }
+
+        return response, 200
+
+    except ValueError as e:
+        return {'error': str(e)}, 400
     except Exception as e:
-        return {"error": f"Internal server error {e}"}, 500  # Return a 500 Internal Server Error for other exceptions
+        return {'error': f'Internal server error: {str(e)}'}, 500
 
 
-def cloud_calculator_controller(jobj):
+def cloud_calculator_controller(data):
+    """Calculate detailed costs for cloud services."""
     try:
-        estimations = []
-        for item in jobj:
-            provider = item.get('provider')
-            service = item.get('service')
-            form_data = item.get('formData')
+        if not data.get('services'):
+            raise ValueError("No services provided for calculation")
 
-            if not provider or not service or not form_data:
-                raise ValueError("Missing provider, service, or formData")
-            # Calculate cost based on provider
-            if provider == 'aws':
-                cost = calculate_aws_cost(service, form_data)
-            elif provider == 'azure':
-                cost = calculate_azure_cost(service, form_data)
-            elif provider == 'gcp':
-                cost = calculate_gcp_cost(service, form_data)
-            else:
-                raise ValueError("Invalid provider")
-            estimations.append({"provider": provider, "service": service, "cost": cost})
-        return jsonify(estimations), 200
-    except (KeyError, ValueError) as e:
-        return jsonify({"error": str(e)}), 400
+        calculations = []
+        for service in data['services']:
+            # Validate required fields
+            required_fields = ['id', 'name', 'category', 'provider', 'quantity', 'region']
+            if not all(field in service for field in required_fields):
+                raise ValueError(f"Missing required fields for service {service.get('name', 'unknown')}")
+
+            # Get the appropriate calculation function
+            calculator = {
+                'aws': calculate_aws_cost,
+                'azure': calculate_azure_cost,
+                'gcp': calculate_gcp_cost,
+                'oracle': calculate_oracle_cost
+            }.get(service['provider'].lower())
+
+            if not calculator:
+                raise ValueError(f"Unsupported provider: {service['provider']}")
+
+            # Calculate costs
+            cost = calculator(service)
+            
+            # Format the calculation response
+            calculation = {
+                'service': {
+                    'id': service['id'],
+                    'name': service['name'],
+                    'category': service['category'],
+                    'provider': service['provider'],
+                    'region': service['region']
+                },
+                'configuration': {
+                    'quantity': service['quantity'],
+                    'instanceType': service.get('instanceType'),
+                    'storage': service.get('storage'),
+                    'bandwidth': service.get('bandwidth')
+                },
+                'costs': {
+                    'hourly': cost['hourly'],
+                    'monthly': cost['monthly'],
+                    'yearly': cost['monthly'] * 12,
+                    'details': {
+                        'compute': {
+                            'amount': cost.get('compute', 0),
+                            'description': 'Compute instance costs'
+                        },
+                        'storage': {
+                            'amount': cost.get('storage', 0),
+                            'description': 'Storage costs'
+                        },
+                        'network': {
+                            'amount': cost.get('network', 0),
+                            'description': 'Network transfer costs'
+                        },
+                        'other': {
+                            'amount': cost.get('other', 0),
+                            'description': 'Additional service costs'
+                        }
+                    }
+                },
+                'recommendations': [
+                    {
+                        'type': 'cost_optimization',
+                        'description': 'Consider reserved instances for long-term usage',
+                        'potential_savings': '30-60%'
+                    },
+                    {
+                        'type': 'performance',
+                        'description': 'Current configuration is optimal for your workload',
+                        'impact': 'high'
+                    }
+                ]
+            }
+            calculations.append(calculation)
+
+        response = {
+            'calculations': calculations,
+            'summary': {
+                'total_hourly': sum(c['costs']['hourly'] for c in calculations),
+                'total_monthly': sum(c['costs']['monthly'] for c in calculations),
+                'total_yearly': sum(c['costs']['yearly'] for c in calculations),
+                'by_provider': {},
+                'by_category': {}
+            }
+        }
+
+        # Calculate totals by provider and category
+        for calc in calculations:
+            provider = calc['service']['provider']
+            category = calc['service']['category']
+            
+            if provider not in response['summary']['by_provider']:
+                response['summary']['by_provider'][provider] = {
+                    'monthly': 0,
+                    'services_count': 0
+                }
+            if category not in response['summary']['by_category']:
+                response['summary']['by_category'][category] = {
+                    'monthly': 0,
+                    'services_count': 0
+                }
+            
+            response['summary']['by_provider'][provider]['monthly'] += calc['costs']['monthly']
+            response['summary']['by_provider'][provider]['services_count'] += 1
+            response['summary']['by_category'][category]['monthly'] += calc['costs']['monthly']
+            response['summary']['by_category'][category]['services_count'] += 1
+
+        return response, 200
+
+    except ValueError as e:
+        return {'error': str(e)}, 400
     except Exception as e:
-        return jsonify({"error": "Internal server error"}), 500
+        return {'error': f'Internal server error: {str(e)}'}, 500

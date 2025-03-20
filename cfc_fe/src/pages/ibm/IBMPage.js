@@ -1,13 +1,13 @@
 import React from 'react';
 import CloudServicePage from '../../components/CloudServicePage';
 
-const AzurePage = () => {
+const IBMPage = () => {
   return (
     <CloudServicePage
-      provider="azure"
-      title="Microsoft Azure Services"
+      provider="ibm"
+      title="IBM Cloud"
     />
   );
 };
 
-export default AzurePage; 
+export default IBMPage; 

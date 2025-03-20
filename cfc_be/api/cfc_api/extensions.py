@@ -1,15 +1,19 @@
+"""Extensions module for the Cost Formation Calculator API."""
+import os
 from urllib import parse
-
-username = "tp_cloud_test"
-password = "TpSv@234@#"
-password = parse.quote_plus(password)
-
-MONGODB = "cfc_main"
-MONGO_URI = f"mongodb+srv://{username}:{password}@tpfecluster.vslsueh.mongodb.net/?retryWrites=true&w=majority&appName=TPFECluster"
-MONGODB_LOCAL_URI = "mongodb://65.1.131.242:27017/?retryWrites=true&loadBalanced=false&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000"
-
+from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
+import logging
 
+# Load environment variables
+load_dotenv()
+
+# MongoDB configuration
+MONGODB_USERNAME = os.getenv('MONGODB_USERNAME')
+MONGODB_PASSWORD = os.getenv('MONGODB_PASSWORD')
+MONGODB_DATABASE = os.getenv('MONGODB_DATABASE')
+MONGODB_URI = os.getenv('MONGODB_URI')
+MONGODB_LOCAL_URI = os.getenv('MONGODB_LOCAL_URI')
 
 class MongoDBService:
     def __init__(self, db_uri, db_name):
@@ -37,11 +41,8 @@ class MongoDBService:
         collection = self.db[collection_name]
         return collection.delete_one(query)
 
-
-db_service = MongoDBService(MONGODB_LOCAL_URI, MONGODB)
-
-import logging
-
+# Initialize MongoDB service with local URI
+db_service = MongoDBService(MONGODB_LOCAL_URI, MONGODB_DATABASE)
 
 class Logger:
     def __init__(self):

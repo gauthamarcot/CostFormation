@@ -1,0 +1,25 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="cfc_be",
+    version="0.1.0",
+    packages=find_packages(),
+    install_requires=[
+        "flask==2.3.3",
+        "flask-restx==1.1.0",
+        "flask-cors==4.0.0",
+        "pymongo==4.6.2",
+        "python-dotenv==1.0.1",
+        "requests==2.31.0",
+        "pytest==8.0.2",
+        "black==24.2.0",
+        "flake8==7.0.0",
+        "python-dateutil==2.8.2",
+        "boto3>=1.26.0",
+        "azure-mgmt-resource>=21.1.0",
+        "google-cloud-resource-manager>=1.0.0",
+        "tenacity>=8.0.0",
+        "PyYAML==6.0.1"
+    ],
+    python_requires=">=3.8",
+)
